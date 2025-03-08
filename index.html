@@ -1,0 +1,738 @@
+
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEM VINDO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Fundo escuro */
+            color: rgb(34, 255, 0); /* Texto claro */
+            margin: 0;
+            padding: 0;
+        }
+
+        .popup, .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo mais escuro */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999999;
+           
+        }
+
+        .popup-content, .modal-content {
+            background-color: #262626d3; /* Fundo do conteúdo em modo escuro */
+            padding: 20px;
+            border-radius: 5px;
+            width: 350px;
+            text-align: center;
+            color: rgb(75, 210, 8); /* Texto claro */
+            border: #1dfc00 2px solid;
+            box-shadow: #1dfc007f 0px 0px 20px 15px;
+        }
+
+        input {
+            width: 90%;
+            padding: 8px;
+            
+            margin: 10px 0;
+          
+            border-radius: 5px;
+            background-color: #0a0a0a; /* Fundo escuro para inputs */
+            color: rgb(238, 234, 0); /* Texto claro nos inputs */
+            border: #1dfc00 1px solid;
+            box-shadow: #1dfc00 3px 3px 8px;
+           
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Estilo do alert customizado */
+        .alert {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 1000;
+            min-width: 200px;
+            text-align: center;
+            z-index: 9999999;
+        }
+
+        .alert.success {
+            background-color: #4CAF50;
+            z-index: 9999999;
+        }
+
+        .alert.error {
+            background-color: #f44336;
+            z-index: 9999999;
+        }
+
+        .alert.info {
+            background-color: #2196F3;
+            z-index: 9999999;
+        }
+
+        .alert.warning {
+            background-color: #ff9800;
+            z-index: 9999999;
+        }
+
+        /* Animação para o alerta */
+        .alert.show {
+            display: block;
+            animation: fadeIn 0.5s;
+            z-index: 9999999;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Popup de Login -->
+<div id="login-popup" class="popup" style="display: flex;">
+    <div class="popup-content">
+        <h2>Login</h2>
+        <label for="login-username">Usuário:</label>
+        <input type="text" id="login-username" placeholder="Digite seu usuário">
+        <label for="login-password">Senha:</label>
+        <input type="password" id="login-password" placeholder="Digite sua senha">
+        <button onclick="login()">Entrar</button>
+        <button onclick="openRegisterModal()">Cadastrar</button>
+    </div>
+</div>
+
+<!-- Modal de Cadastro -->
+<div id="register-modal" class="modal">
+    <div class="modal-content">
+        <h2>Cadastrar Usuário</h2>
+        <label for="register-username">Usuário:</label>
+        <input type="text" id="register-username" placeholder="Escolha um usuário">
+        <label for="register-password">Senha:</label>
+        <input type="password" id="register-password" placeholder="Escolha uma senha">
+        <label for="verification-code">Código de Validação:</label>
+        <input type="text" id="verification-code" placeholder="Digite o código">
+        <button onclick="register()">Cadastrar</button>
+        <button onclick="closeRegisterModal()">Fechar</button>
+    </div>
+</div>
+
+<!-- Alert Customizado -->
+<div id="custom-alert" class="alert"></div>
+
+<script>
+    // Função para abrir o modal de cadastro
+    function openRegisterModal() {
+        document.getElementById("login-popup").style.display = "none";
+        document.getElementById("register-modal").style.display = "flex";
+    }
+
+    // Função para fechar o modal de cadastro
+    function closeRegisterModal() {
+        document.getElementById("register-modal").style.display = "none";
+        document.getElementById("login-popup").style.display = "flex";
+    }
+
+    // Função de cadastro
+    function register() {
+        const username = document.getElementById("register-username").value;
+        const password = document.getElementById("register-password").value;
+        const verificationCode = document.getElementById("verification-code").value;
+
+        const correctCode = "123456"; // Código de validação fixo, pode ser alterado
+
+        if (verificationCode === correctCode) {
+            // Salva o usuário e senha no localStorage
+            localStorage.setItem("username", username);
+            localStorage.setItem("password", password);
+            showAlert("Cadastro realizado com sucesso!", "success");
+            closeRegisterModal();
+        } else {
+            showAlert("Código de validação incorreto.", "error");
+        }
+    }
+
+    // Função de login
+    function login() {
+        const loginUsername = document.getElementById("login-username").value;
+        const loginPassword = document.getElementById("login-password").value;
+
+        const storedUsername = localStorage.getItem("username");
+        const storedPassword = localStorage.getItem("password");
+
+        if (!storedUsername) {
+            showAlert("Usuário não cadastrado.", "error");
+        } else if (loginUsername === storedUsername && loginPassword === storedPassword) {
+            showAlert("Login bem-sucedido!", "success");
+            document.getElementById("login-popup").style.display = "none";
+        } else if (loginUsername === storedUsername && loginPassword !== storedPassword) {
+            showAlert("Senha incorreta.", "error");
+        } else {
+            showAlert("Usuário ou senha incorretos.", "error");
+        }
+    }
+
+    // Função para exibir o alerta customizado
+    function showAlert(message, type) {
+        const alertBox = document.getElementById("custom-alert");
+        alertBox.innerHTML = message;
+        alertBox.className = `alert ${type} show`;
+        
+        // Esconde o alerta após 3 segundos
+        setTimeout(function() {
+            alertBox.classList.remove("show");
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Arquivos do GitHub</title>
+    
+    
+
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: #1d1f20;
+            overflow: hidden;
+            
+        }
+
+       /* Mantém a rolagem funcional na barra lateral */
+       #sidebar {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        height: calc(100vh - 70px);
+        border-right: 1px solid #64df06;
+        padding: 15px;
+        width: 250px;
+        background-color: #222;
+        color: #ddd;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+    }
+
+    /* Oculta a barra de rolagem do sidebar no WebKit */
+    #sidebar::-webkit-scrollbar {
+        display: none;
+    }
+    
+    #sidebar {
+        -ms-overflow-style: none;
+    }
+
+        #sidebar h2 {
+            color: #898989;
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: -3px;
+            margin-top: 0;
+        }
+
+        /* Barra de pesquisa */
+        #search-bar {
+            margin: 8px 0;
+            padding: 10px;
+            width: 89%;
+            border: 3px solid #444;
+            background-color: #333;
+            color: #ddd;
+            border-radius: 8px;
+        }
+
+        /* Estilo das pastas e arquivos */
+        .folder, .file {
+            padding-left: 0px;
+            cursor: pointer;
+            color: #64df06;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 1px;
+        }
+
+        .folder::before {
+            content: "📁";
+            margin-right: 8px;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .folder.open::before {
+            content: "📂";
+            transform: rotate(80deg);
+            
+        }
+
+        .file::before {
+            content: "📄";
+            margin-right: 10px;
+        }
+
+        /* Efeito de Hover nas pastas e arquivos */
+        .folder:hover, .file:hover {
+            background-color: #444;
+            color: #1dfc00;
+        }
+
+        /* Estilo de recuo para pastas e arquivos */
+        .nested {
+            display: none;
+            margin-left: 20px;
+            transition: max-height 0.3s ease;
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Conteúdo principal */
+        #main-content {
+            margin-left: 280px;
+            padding: 20px;
+            width: calc(100% - 280px);
+            background-color: #282c34;
+            color: #ddd;
+            overflow: auto;
+        }
+        
+
+        #file-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            transition: background-color 0.3s;
+        }
+
+        li:hover {
+            background-color: #444;
+        }
+
+        a {
+            text-decoration: none;
+            color: #64df06;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #000000;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            border: #1dfc00 2px solid;
+        }
+
+        button:hover {
+            background-color: #303030;
+        }
+
+        /* Estilo do painel de navegação */
+        #path-panel {
+            margin-top: 0px;
+            padding: 5px;
+            background-color: #333;
+            border-radius: 5px;
+            color: #ddd;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-direction: column; /* Organiza o painel verticalmente */
+        }
+
+        #path-panel span {
+            flex-grow: 1;
+            text-align: center;
+            margin-bottom: 0px; /* Espaçamento entre o caminho e o botão */
+        }
+
+        #path-panel button {
+            color: #64df06;
+            background-color: #000;
+            border: 1px solid #64df06;
+            padding: 8px 15px;
+        }
+
+        #path-panel button:disabled {
+            background-color: #444;
+            cursor: not-allowed;
+        }
+
+        /* Alinhar os botões lado a lado */
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .buttons-container button {
+            margin-top: 0;
+            width:49%; /* Para que os botões fiquem lado a lado */
+        }
+        .webview {
+            position: absolute;
+            top: 70px; /* 70px abaixo do cabeçalho */
+            left: 260px; /* 250px da esquerda */
+            width: calc(100% - 250px); /* Ajusta a largura para ocupar o restante da tela */
+            height: calc(100vh - 70px); /* Ajusta a altura para ocupar o restante da tela */
+            border: none;
+        }
+          
+        </style>
+    </head>
+    
+    <body>
+        <iframe class="webview" src="https://bizoonydb.github.io/PDFJS/db/pgandre.html"></iframe>
+
+    <!-- Barra lateral com o gestor de arquivos -->
+    <div id="sidebar">
+        <h2>BEM VINDO</h2>
+        <input type="text" id="search-bar" placeholder="Pesquisar arquivos..." oninput="searchFiles()">
+        
+        <!-- Painel de navegação -->
+        <div id="path-panel">
+            <span id="current-path">Caminho: /</span> 
+            
+
+            <!-- Container para os botões -->
+            <div class="buttons-container">
+                <button id="back-btn" onclick="navigate('back')" disabled>← Voltar</button>
+                <button onclick="window.location.href='https:whatsapp.com';">SOLICIAR ARQUIVO</button>
+                
+            </div>
+        </div>
+        <hr>
+        <ul id="file-list"></ul>
+    </div>
+    
+
+    
+
+    <script>
+        
+        const repo = 'eletricscheme/app'; // Repositório GitHub fixo
+    
+        async function loadFiles(path = '') {
+            const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+    
+            try {
+                const response = await fetch(url, {
+                    method: 'GET'
+                });
+    
+                if (!response.ok) throw new Error(`Erro ${response.status}: ${response.statusText}`);
+    
+                const data = await response.json();
+                allFiles = data; // Armazenar os arquivos para pesquisa
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = ''; // Limpar a lista de arquivos antes de adicionar novos
+    
+                // Atualizar o caminho
+                currentPath = path;
+                document.getElementById('current-path').textContent = `Caminho: /${currentPath}`;
+    
+                // Habilitar/desabilitar os botões de navegação
+                document.getElementById('back-btn').disabled = currentPath === '';
+    
+                // Separar diretórios e arquivos
+                const directories = data.filter(item => item.type === 'dir');
+                const files = data.filter(item => item.type === 'file');
+    
+                // Função para criar item de diretório ou arquivo
+                function createListItem(item, isDir = false) {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.textContent = item.name;
+    
+                    const rawUrl = `https://raw.githubusercontent.com/${repo}/main/${item.path}`;
+                    const fileUrl = `https://github.com/${repo}/blob/main/${item.path}`;
+    
+                    // Verificar o tipo de arquivo e ajustar o comportamento
+                    const isPdf = item.name.toLowerCase().endsWith('.pdf');
+                    const isZip = item.name.toLowerCase().endsWith('.zip');
+                    const isHtml = item.name.toLowerCase().endsWith('.html');
+                    const isUrl = item.name.toLowerCase().endsWith('.url'); // Caso seja um link direto
+    
+                    // Se for um arquivo PDF, exibe o arquivo em PDF.js
+                    if (isPdf) {
+                        a.href = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${rawUrl}`;
+                    } 
+                    // Se for um arquivo ZIP, prepara para o download
+                    else if (isZip) {
+                        a.href = rawUrl;
+                        a.download = item.name; // Garante o download ao clicar
+                    } 
+                    // Se for um arquivo HTML, abre diretamente a página
+                    else if (isHtml) {
+                        // Usando a URL de GitHub Pages para renderizar o HTML como uma página
+                        a.href = `https://eletricscheme.github.io/app/${item.path}`; // URL do GitHub Pages
+                    } 
+                    // Se for um arquivo .url ou URL, abre diretamente
+                    else if (isUrl) {
+                        a.href = rawUrl;
+                    } 
+                    // Para outros arquivos, exibe o link no GitHub
+                    else {
+                        a.href = fileUrl;
+                    }
+    
+                    a.target = '_blank'; // Sempre abre em uma nova aba
+    
+                    const nestedList = document.createElement('ul');
+                    nestedList.classList.add('nested');
+    
+                    if (isDir) {
+                        const folder = document.createElement('div');
+                        folder.classList.add('folder');
+                        folder.textContent = item.name;
+                        folder.onclick = (e) => {
+                            e.preventDefault();
+                            folder.classList.toggle('open');
+                            nestedList.classList.toggle('active');
+                            if (!nestedList.classList.contains('active')) {
+                                nestedList.innerHTML = ''; // Limpar o conteúdo se estiver recolhendo a pasta
+                            } else {
+                                loadFiles(item.path); // Carregar conteúdo da pasta
+                            }
+                        };
+    
+                        li.appendChild(folder);
+                        li.appendChild(nestedList);
+                    } else {
+                        const file = document.createElement('div');
+                        file.classList.add('file');
+                        file.appendChild(a);
+                        li.appendChild(file);
+                    }
+    
+                    fileList.appendChild(li);
+                }
+    
+                // Adicionar diretórios primeiro, depois arquivos
+                directories.forEach(dir => createListItem(dir, true));
+                files.forEach(file => createListItem(file, false));
+    
+            } catch (error) {
+                document.getElementById('file-list').innerHTML = `<li style="color: red;">Erro ao carregar arquivos: ${error.message}</li>`;
+            }
+        }
+    
+        // Função de navegação para voltar
+        function navigate(direction) {
+            if (direction === 'back' && currentPath) {
+                const newPath = currentPath.split('/').slice(0, -1).join('/');
+                loadFiles(newPath);
+            }
+        }
+    
+        // Função de pesquisa
+        function searchFiles() {
+            if (!allFiles.length) {
+                console.warn("Nenhum arquivo carregado ainda.");
+                return;
+            }
+    
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const filteredFiles = allFiles.filter(item => item.name.toLowerCase().includes(query));
+            renderFileList(filteredFiles);
+        }
+    
+        window.onload = () => {
+            loadFiles();
+        };
+
+    
+        // Função de navegação para voltar
+        function navigate(direction) {
+            if (direction === 'back' && currentPath) {
+                const newPath = currentPath.split('/').slice(0, -1).join('/');
+                loadFiles(newPath);
+            }
+        }
+
+        // Função de pesquisa
+        function renderFileList(files) {
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '';
+    
+            function createListItem(item, isDir = false) {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.textContent = item.name;
+    
+                const isPdf = item.path.toLowerCase().endsWith('.pdf');
+                const fileUrl = isPdf 
+                    ? `https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/${repo}/main/${item.path}`
+                    : `https://github.com/${repo}/blob/main/${item.path}`; 
+                
+                a.href = fileUrl;
+                
+                a.target = '_blank';
+    
+                if (isDir) {
+                    const folder = document.createElement('div');
+                    folder.classList.add('folder');
+                    folder.textContent = item.name;
+                    folder.onclick = () => loadFiles(item.path);
+                    li.appendChild(folder);
+                } else {
+                    const file = document.createElement('div');
+                    file.classList.add('file');
+                    file.appendChild(a);
+                    li.appendChild(file);
+                }
+    
+                fileList.appendChild(li);
+            }
+    
+            const directories = files.filter(item => item.type === 'dir');
+            const normalFiles = files.filter(item => item.type === 'file');
+    
+            directories.forEach(dir => createListItem(dir, true));
+            normalFiles.forEach(file => createListItem(file, false));
+        }
+    
+        function searchFiles() {
+            if (!allFiles.length) {
+                console.warn("Nenhum arquivo carregado ainda.");
+                return;
+            }
+    
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const filteredFiles = allFiles.filter(item => item.name.toLowerCase().includes(query));
+            renderFileList(filteredFiles);
+        }
+    
+        function navigate(direction) {
+            if (direction === 'back' && currentPath) {
+                const newPath = currentPath.split('/').slice(0, -1).join('/');
+                loadFiles(newPath);
+            }
+        }
+    
+        window.onload = () => {
+            loadFiles();
+        };
+    </script>
+
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh; /* Garante que o corpo tenha 100% da altura da janela */
+        
+    }
+
+    .fixed-image {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw; /* Ocupa 100% da largura da janela */
+        z-index: +7; /* Fica ACIMA de outros elementos */
+        border-bottom: 1px solid #1dfc00; /* Adiciona a borda verde na parte inferior */
+    }
+
+    .fixed-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ajusta a imagem para cobrir toda a tela sem distorção */
+		z-index: +5; /* Fica ACIMA de outros elementos */
+        border-bottom: 1px #1dfc00;
+    }
+
+    .content {
+        position: relative;
+        z-index: 1; /* Garante que o texto fique acima da imagem */
+        color: white;
+        text-align: center;
+        padding: 20px;
+        
+    }
+    
+  </style>
+
+<body class='header-page  wsite-theme-light'>
+
+    <!-- Imagem Fixa -->
+  <div class="fixed-image">
+    <img src="https://bizoonydb.github.io/PDFJS/db/CABANDRE.jpg" alt="Imagem Fixa">
+  </div>
+
+
+
+	
+	<script type="text/javascript" src="/files/theme/plugins.js"></script>
+	<script type="text/javascript" src="/files/theme/custom.js"></script>
+
+</body>
+</html>
+
+
